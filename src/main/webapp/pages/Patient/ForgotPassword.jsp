@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Patient Login form</title>
+<title>Forgot Password</title>
 
 <style>
     body {
@@ -90,22 +90,22 @@
 <body>
 
 <div class="container">
-    <h2>Patient Login</h2>
+    <h2>Patient Forgot Password</h2>
 
-    <form action="/patient/loginPatient" method="post">
+    <form action="/patient/updatePassword" method="post">
 
         <input type="email" placeholder="Enter your email" name="email" required>
 
         <input type="text" placeholder="Enter your password" name="password" required>
+        
+        <input type="text" placeholder="Enter you confirm password" name="cnfPassword" required>
 
-        <button type="submit">Log In</button>
+        <button type="submit">Update Password</button>
     </form>
 
-    <div class="links">
-        <a href="/patient/register">Create Account</a>
-        <a href="/patient/forgotPassword">Forget Password?</a>
-    </div>
 </div>
+
+
 
 </body>
 </html>

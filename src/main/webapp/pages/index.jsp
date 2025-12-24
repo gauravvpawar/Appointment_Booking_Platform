@@ -2,13 +2,19 @@
     pageEncoding="UTF-8"%>
 
 
+<c:if test="${not empty msg}">
+    <p id="flashMsg" style="color:green">${msg}</p>
+</c:if>
+
 
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
 <meta charset="UTF-8">
 
     <title>MediCare - Doctor Appointment System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    
     <style>
         :root {
             --primary: #2c7fb8;
@@ -392,13 +398,6 @@
 </head>
 <body>
 
-<!-- to show message -->
-
-<div th:if="${msg}" style="color: green;">
-    <p th:text="${msg}"></p>
-</div>
-
-
     <!-- Header -->
     <header>
         <div class="container">
@@ -508,7 +507,14 @@
         </div>
     </footer>
 
-
+<script>
+    setTimeout(function () {
+        var msg = document.getElementById("flashMsg");
+        if (msg) {
+            msg.style.display = "none";
+        }
+    }, 3000); // 3000 ms = 3 seconds
+</script>
            
 </body>
 </html>
