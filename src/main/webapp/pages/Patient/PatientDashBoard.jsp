@@ -493,6 +493,56 @@ if(patient == null)
         color: var(--text-light);
         margin-bottom: 2rem;
     }
+    
+    
+    /* Profile avatar link */
+.profile-avatar-link {
+    display: inline-block;
+    text-align: center; /* Center filename under image */
+    text-decoration: none; /* Remove underline */
+}
+
+/* Profile avatar container */
+.profile-avatar {
+    display: flex;
+    flex-direction: column; /* Stack image and filename */
+    align-items: center;
+    width: 140px; /* Set fixed width */
+}
+
+/* Avatar image */
+.profile-avatar-img {
+    width: 120px;   /* Fixed width */
+    height: 120px;  /* Fixed height */
+    border-radius: 50%; /* Circular */
+    border: 4px solid white;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+}
+
+/* Fallback avatar */
+.avatar-fallback {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+/* Filename below avatar */
+.file-name {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #64748b; /* text-light */
+    word-break: break-word; /* long filenames wrap */
+}
+    
+    
 
     /* RESPONSIVE DESIGN */
     @media (max-width: 768px) {
@@ -573,6 +623,20 @@ if(patient == null)
     opacity: 1;
     transition: opacity 0.5s ease;
 }
+
+/* Add this under .profile-avatar */
+.profile-avatar {
+    flex-direction: column; /* Stack avatar image and filename */
+}
+
+/* Filename under avatar */
+.profile-avatar .file-name {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    text-align: center;
+}
+
     
 </style>
 
@@ -614,7 +678,7 @@ if(patient == null)
     </div>
     
     <div class="navbar-actions">
-        <a href="./AppointmentPage.jsp?id=${patient.id}" class="btn btn-primary">
+        <a href="/patient/BookAppointment/${patient.id}" class="btn btn-primary">
             <i class="fas fa-calendar-plus"></i>
             Book Appointment
         </a>
@@ -635,10 +699,29 @@ if(patient == null)
                 <h2 class="patient-name"> ${patient.name}</h2>
             </div>
             
-            <div class="profile-card fade-in delay-1">
-                <div class="profile-avatar">
-                 	${patient.name.substring(0,1)}
-                </div>
+
+<div class="profile-avatar-container">
+    <a href="/patient/PatientEditForm/${patient.id}" class="profile-avatar-link">
+        <div class="profile-avatar">
+            <c:choose>
+                <c:when test="${not empty patient.patientinfo.fileName}">
+                    <img src="/images/${patient.patientinfo.fileName}" 
+                         alt="Profile Picture" 
+                         class="profile-avatar-img"
+                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;avatar-fallback&quot;>${patient.name.substring(0,1)}</div>'">
+                </c:when>
+                <c:otherwise>
+                    <div class="avatar-fallback">
+                        ${patient.name.substring(0,1)}
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </a>
+</div>
+
+          
+          
                 
                 <div class="profile-details">
                     <div class="detail-item">
@@ -682,18 +765,20 @@ if(patient == null)
                     </div>
                 </div>
                 
+                
+                
                 <div class="status-badge">
                     <i class="fas fa-check-circle"></i>
-                    Active Account
+                    ${patient.status}
                 </div>
                 
-                <a href="./PatientEditForm.jsp?id=${patient.id}" class="edit-profile-link">
+                <a href="/patient/PatientEditForm/${patient.id}" class="edit-profile-link">
                     <i class="fas fa-edit"></i>
                     Edit Profile Information
                 </a>
             </div>
         </div>
 
-
+</div>
 </body>
 </html>

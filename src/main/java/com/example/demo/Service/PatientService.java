@@ -6,6 +6,8 @@ public interface PatientService
 {
 	public void savePatient(Patient p);
 	
+	public Patient findById(int id);
+	
 	public Patient findByEmail(String email);
 	
 	public Patient loginPatient(String email , String password);

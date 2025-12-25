@@ -18,6 +18,11 @@ public class PatientDao implements PatientService
 	{
 		 pr.save(p);
 	}
+	
+	public Patient findById(int id)
+	{
+		return pr.findById(id).orElse(null);
+	}
 
 	@Override
 	public Patient loginPatient(String email, String password) {

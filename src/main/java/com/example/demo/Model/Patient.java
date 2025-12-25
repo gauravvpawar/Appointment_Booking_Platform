@@ -27,7 +27,7 @@ public class Patient
     private String status = "Active";
 	
 	@Embedded
-	private PatientInfo patientinfo;
+	private PatientInfo patientinfo = new PatientInfo();
 
 	public int getId() {
 		return id;

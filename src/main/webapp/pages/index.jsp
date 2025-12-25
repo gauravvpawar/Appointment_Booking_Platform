@@ -421,7 +421,7 @@
                     	<a href="patient/login">Patient Login</a>
                     </button>
                     <button class="btn btn-primary" id="doctorLoginBtn">
-                    	<a href="">Doctor Login</a>
+                    	<a href="/doctor/login">Doctor Login</a>
                     </button>
                 </div>
                  
