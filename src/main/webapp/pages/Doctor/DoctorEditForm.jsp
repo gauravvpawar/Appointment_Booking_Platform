@@ -2,6 +2,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+    
     <%@page import="java.sql.*" %>
 <!DOCTYPE html>
 <html>
@@ -146,6 +148,21 @@
             padding: 20px;
         }
     }
+    
+    .doc-image {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 10px;
+	border: 1px solid #d1d5db;
+	margin-bottom: 10px;
+	}
+	.file-hint {
+	    font-size: 12px;
+	    color: #6b7280;
+	    margin-bottom: 6px;
+	}
+    
 </style>
 
 
@@ -157,7 +174,7 @@
 <div class="registration-container">
     <h2>Doctor Update Data</h2>
 
-    <form action="/doctor/DoctorUpdateData" method="post" enctype="multipart/form-data">
+    <form action="/doctor/doctorUpdateData/${doctor.did}" method="post" enctype="multipart/form-data">
 
     <label>Full Name:</label>
     <input type="text" name="name" value="${doctor.name}" required>
@@ -174,8 +191,9 @@
     <label>Phone:</label>
     <input type="text" name="phone" value="${doctor.phone}" required>
 
-    <label>Date of Birth:</label>
-    <input type="date" name="dob" value="${doctor.doctorInfo.dob}" required>
+		<label>Date of Birth:</label>
+		<input type="date" name="doctorInfo.dob" 
+	      value="${doctor.doctorInfo.dob != null ? doctor.doctorInfo.dob : ''}" required>
 
     <label>Gender:</label>
     <select name="gender" required>
@@ -185,10 +203,10 @@
     </select>
 
     <label>Address:</label>
-    <input type="text" name="address" value="${doctor.doctorInfo.address}" required>
+    <input type="text" name="doctorInfo.address" value="${doctor.doctorInfo.address}" required>
 
     <label>Blood Group:</label>
-    <select name="bloodGroup" required>
+    <select name="doctorInfo.bloodGroup" required>
         <option value="A+" ${doctor.doctorInfo.bloodGroup == 'A+' ? 'selected' : ''}>A+</option>
         <option value="A-" ${doctor.doctorInfo.bloodGroup == 'A-' ? 'selected' : ''}>A-</option>
         <option value="B+" ${doctor.doctorInfo.bloodGroup == 'B+' ? 'selected' : ''}>B+</option>
@@ -200,7 +218,7 @@
     </select>
 
     <label>Emergency Contact:</label>
-    <input type="text" name="emergencyContact" value="${doctor.doctorInfo.emergencyContact}" required>
+    <input type="text" name="doctorInfo.emergencyContact" value="${doctor.doctorInfo.emergencyContact}" >
 
     <label>Specialization:</label>
     <select name="specialization" required>
@@ -218,10 +236,55 @@
     <input type="number" name="experience" value="${doctor.experience}" min="0">
 
     <label>License Number:</label>
-    <input type="text" name="license_number" value="${doctor.doctorInfo.license_number}" required>
+    <input type="text" name="doctorInfo.licenseNumber" value="${doctor.doctorInfo.licenseNumber}" required>
 
-    <label>Upload License / Certificate:</label>
-    <input type="file" name="fname" accept=".pdf,.jpg,.png">
+  <label>License Certificate:</label>
+
+<c:if test="${not empty doctor.doctorInfo.licenseCertificate}">
+
+    <c:if test="${doctor.doctorInfo.licenseCertificate.endsWith('.jpg')
+              || doctor.doctorInfo.licenseCertificate.endsWith('.jpeg')
+              || doctor.doctorInfo.licenseCertificate.endsWith('.png')}">
+        <img src="/images/Doctor/License/${doctor.doctorInfo.licenseCertificate}"
+             class="doc-image"
+             alt="License Certificate">
+    </c:if>
+
+    <c:if test="${doctor.doctorInfo.licenseCertificate.endsWith('.pdf')}">
+        <a href="/images/Doctor/License/${doctor.doctorInfo.licenseCertificate}"
+           target="_blank">
+           View License Certificate (PDF)
+        </a>
+    </c:if>
+
+    <div class="file-hint">
+        Upload new certificate to replace (pdf / jpg / png)
+    </div>
+</c:if>
+
+<input type="file"
+       name="licenseCertificate"
+       accept=".pdf,.jpg,.jpeg,.png"
+       <c:if test="${empty doctor.doctorInfo.licenseCertificate}">required</c:if>>
+
+
+
+
+<label>Profile Image:</label>
+
+<c:if test="${not empty doctor.doctorInfo.fileName}">
+    <img src="/images/Doctor/profiles/${doctor.doctorInfo.fileName}"
+         class="doc-image"
+         alt="Profile Image">
+
+    <div class="file-hint">Upload new image to replace (jpg / png)</div>
+</c:if>
+
+<input type="file"
+       name="fname"
+       accept=".jpg,.jpeg,.png"
+       <c:if test="${empty doctor.doctorInfo.fileName}">required</c:if>>
+
 
     <label>Status:</label>
     <select name="status" required>

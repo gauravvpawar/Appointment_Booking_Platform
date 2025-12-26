@@ -2,6 +2,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 
  <%
 HttpSession s1 = request.getSession();
@@ -15,6 +17,14 @@ if(doctor == null)
     out.println("</script>");
 }
 %>   
+
+
+<c:if test="${not empty msg}">
+    <div id="toast" class="toast">
+        ${msg}
+    </div>
+</c:if>
+
     
 <!DOCTYPE html>
 <html>
@@ -318,19 +328,27 @@ if(doctor == null)
     }
 
     .profile-avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        margin: 0 auto 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 2.5rem;
-        border: 4px solid white;
-        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
-    }
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+    border: 4px solid white;
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+    overflow: hidden; /* IMPORTANT */
+	}
+	
+	.profile-avatar img.profile-img {
+	    width: 100%;
+	    height: 100%;
+	    object-fit: cover;
+	}
+	
 
     .doctor-info h2 {
         font-size: 1.5rem;
@@ -693,6 +711,41 @@ if(doctor == null)
     .delay-3 {
         animation-delay: 0.3s;
     }
+    
+    
+    .toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #10b981, #34d399);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    animation: slideIn 0.5s ease, fadeOut 0.5s ease 3s forwards;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+}
+    
+    
 </style>
 </head>
 <body>
@@ -838,15 +891,30 @@ if(doctor == null)
         <div class="profile-section">
             <!-- PROFILE CARD -->
             <div class="profile-card fade-in">
-                <div class="profile-avatar">
-                    <i class="fas fa-user-md"></i>
-                </div>
-                <div class="doctor-info">
-                    <h2> ${doctor.name} </h2>
-                    <div class="doctor-specialization">
-                       ${doctor.specialization}
-                    </div>
-                </div>
+               
+          <div class="profile-avatar">
+    <c:choose>
+        <c:when test="${doctor.doctorInfo ne null and not empty doctor.doctorInfo.fileName}">
+            <img 
+                src="/images/Doctor/Profiles/${doctor.doctorInfo.fileName}" 
+                alt="Doctor Image"
+                class="profile-img"
+            />
+        </c:when>
+        <c:otherwise>
+            <i class="fas fa-user-md"></i>
+        </c:otherwise>
+    </c:choose>
+</div>
+
+		
+		<div class="doctor-info">
+		    <h2>${doctor.name}</h2>
+		    <div class="doctor-specialization">
+		        ${doctor.specialization}
+		    </div>
+		</div>
+               
                 
                 <div class="contact-info">
                     <div class="contact-item">
@@ -978,6 +1046,13 @@ if(doctor == null)
                 </div>
             </div>
         </div>
+
+<script>
+    setTimeout(() => {
+        const toast = document.getElementById("toast");
+        if (toast) toast.remove();
+    }, 3500);
+</script>
 
    
 </div>

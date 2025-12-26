@@ -18,7 +18,8 @@ public class DoctorInfo
     private String bloodGroup;
     private String emergencyContact;
     
-    private String license_number;
+    private String licenseNumber;
+    private String licenseCertificate;
     private String fileName;
     
     @Column(columnDefinition = "timestamp default current_timestamp")
@@ -56,12 +57,20 @@ public class DoctorInfo
 		this.emergencyContact = emergencyContact;
 	}
 
-	public String getLicense_number() {
-		return license_number;
+	public String getLicenseNumber() {
+		return licenseNumber;
 	}
 
-	public void setLicense_number(String license_number) {
-		this.license_number = license_number;
+	public void setLicenseNumber(String licenseNumber) {
+		this.licenseNumber = licenseNumber;
+	}
+
+	public String getLicenseCertificate() {
+		return licenseCertificate;
+	}
+
+	public void setLicenseCertificate(String licenseCertificate) {
+		this.licenseCertificate = licenseCertificate;
 	}
 
 	public String getFileName() {
@@ -83,8 +92,12 @@ public class DoctorInfo
 	@Override
 	public String toString() {
 		return "DoctorInfo [dob=" + dob + ", address=" + address + ", bloodGroup=" + bloodGroup + ", emergencyContact="
-				+ emergencyContact + ", license_number=" + license_number + ", fileName=" + fileName + ", dateCreated="
-				+ dateCreated + "]";
-	} 
+				+ emergencyContact + ", licenseNumber=" + licenseNumber + ", licenseCertificate=" + licenseCertificate
+				+ ", fileName=" + fileName + ", dateCreated=" + dateCreated + "]";
+	}
+
+	
+
+	
     
 }

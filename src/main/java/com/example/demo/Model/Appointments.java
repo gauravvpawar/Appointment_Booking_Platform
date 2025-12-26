@@ -7,6 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 public class Appointments
@@ -14,9 +18,17 @@ public class Appointments
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int appt_id;
-	private int pid;
-	private int did;
 	
+	@ManyToOne
+	@JoinColumn(name = "pid")
+	private Patient patient;
+
+	@ManyToOne
+	@JoinColumn(name = "did")
+	private Doctor doctor;
+	
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate appointment_date;
 	private String appointment_time;
 	
@@ -34,20 +46,20 @@ public class Appointments
 		this.appt_id = appt_id;
 	}
 
-	public int getPid() {
-		return pid;
+	public Patient getPatient() {
+		return patient;
 	}
 
-	public void setPid(int pid) {
-		this.pid = pid;
+	public void setPatient(Patient patient) {
+		this.patient = patient;
 	}
 
-	public int getDid() {
-		return did;
+	public Doctor getDoctor() {
+		return doctor;
 	}
 
-	public void setDid(int did) {
-		this.did = did;
+	public void setDoctor(Doctor doctor) {
+		this.doctor = doctor;
 	}
 
 	public LocalDate getAppointment_date() {
@@ -84,12 +96,11 @@ public class Appointments
 
 	@Override
 	public String toString() {
-		return "Appointments [appt_id=" + appt_id + ", pid=" + pid + ", did=" + did + ", appointment_date="
-				+ appointment_date + ", appointment_time=" + appointment_time + ", appointment_status="
-				+ appointment_status + ", reason=" + reason + "]";
+		return "Appointments [appt_id=" + appt_id + ", patient=" + patient + ", doctor=" + doctor
+				+ ", appointment_date=" + appointment_date + ", appointment_time=" + appointment_time
+				+ ", appointment_status=" + appointment_status + ", reason=" + reason + "]";
 	}
 	
-	
-	
+
 	
 }

@@ -1,5 +1,7 @@
 package com.example.demo.Dao;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +34,11 @@ public class DoctorDao implements DoctorService
 	public Doctor findById(int id)
 	{
 		return dr.findById(id).orElse(null);
+	}
+
+	@Override
+	public List<Doctor> findAllDoctor() {
+		
+		return dr.findAll();
 	}
 }

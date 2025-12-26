@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -18,8 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.demo.Model.Appointments;
+import com.example.demo.Model.Doctor;
 import com.example.demo.Model.Patient;
 import com.example.demo.Model.PatientInfo;
+import com.example.demo.Service.AppointmentService;
+import com.example.demo.Service.DoctorService;
 import com.example.demo.Service.PatientService;
 
 
@@ -29,13 +34,21 @@ public class PatientController
 {
 
     private final PasswordEncoder passwordEncoder;
+
 	@Autowired
 	PatientService ps;
+	
+	@Autowired
+	DoctorService ds;
+
+	
+
 
     PatientController(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 	
+    
 	@RequestMapping("/")
 	public String home()
 	{
@@ -111,7 +124,7 @@ public class PatientController
 		
 		m.addAttribute("patient", patient);
 		
-		redirectAttributes.addFlashAttribute("msg", "Logged in successfully");
+		m.addAttribute("msg", "Logged in successfully");
 
 		
 		return "Patient/PatientDashBoard";
@@ -242,7 +255,7 @@ public class PatientController
 	     
 	     ps.savePatient(existingPatient);
 	     
-	     redirectAttributes.addFlashAttribute("success", "Patient updated successfully!");
+	     redirectAttributes.addFlashAttribute("msg", "Patient updated successfully!");
 		
 		return "redirect:/patient/DashBoard/{id}";
 	}
@@ -256,14 +269,34 @@ public class PatientController
 		
 		m.addAttribute("patient", patient);
 		
+		// to return the list of doctor who is active
+		List<Doctor> doctorList = ds.findAllDoctor().stream()
+													.filter(d -> "Active".equals(d.getStatus())).toList();
+		
+		m.addAttribute("doctors", doctorList);
+		
 		return "Patient/AppointmentBook";
 	}
 
-	// register appointment on working
-	// working
-//	@PostMapping("/RegisterAppointment/${id}")
-//	public String registerAppointment(@PathVariable int id)
+	
+////	 register appointment on working
+////	 working
+//	@PostMapping("/RegisterAppointment/{id}")
+//	public String registerAppointment(@PathVariable int id , @ModelAttribute Appointments appointment , RedirectAttributes redirectAttributes)
 //	{
-//		return null;
+//		System.out.println(appointment);
+//		
+//		Patient patient = ps.findById(id);
+//		
+//		Doctor doctor  = ds.findById(appointment.getDoctor().getDid());
+//		
+//		appointment.setDoctor(doctor);
+//		appointment.setPatient(patient);
+//		
+//		as.saveAppointment(appointment);
+//		
+//		 redirectAttributes.addFlashAttribute("msg", "Appointment Booked successfully!");
+//			
+//		return "redirect:/patient/DashBoard/{id}";
 //	}
 }

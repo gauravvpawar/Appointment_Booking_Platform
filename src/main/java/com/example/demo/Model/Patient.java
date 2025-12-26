@@ -1,11 +1,14 @@
 package com.example.demo.Model;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -28,6 +31,9 @@ public class Patient
 	
 	@Embedded
 	private PatientInfo patientinfo = new PatientInfo();
+	
+	@OneToMany
+	private List<Appointments> appointments;
 
 	public int getId() {
 		return id;
@@ -109,13 +115,21 @@ public class Patient
 		this.patientinfo = patientinfo;
 	}
 
+	public List<Appointments> getAppointments() {
+		return appointments;
+	}
+
+	public void setAppointments(List<Appointments> appointments) {
+		this.appointments = appointments;
+	}
+
 	@Override
 	public String toString() {
 		return "Patient [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", cnfPassword="
 				+ cnfPassword + ", phone=" + phone + ", gender=" + gender + ", age=" + age + ", status=" + status
-				+ ", patientinfo=" + patientinfo + "]";
+				+ ", patientinfo=" + patientinfo + ", appointments=" + appointments + "]";
 	}
-	
+
 	
 	
 }

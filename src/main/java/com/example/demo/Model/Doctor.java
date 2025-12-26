@@ -1,10 +1,13 @@
 package com.example.demo.Model;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Doctor 
@@ -27,6 +30,9 @@ public class Doctor
     private String status = "Active";
 	
 	private DoctorInfo doctorInfo = new DoctorInfo();
+	
+	@OneToMany
+	private List<Appointments> appointments;
 
 	public int getDid() {
 		return did;
@@ -124,13 +130,22 @@ public class Doctor
 		this.doctorInfo = doctorInfo;
 	}
 
+	public List<Appointments> getAppointments() {
+		return appointments;
+	}
+
+	public void setAppointments(List<Appointments> appointments) {
+		this.appointments = appointments;
+	}
+
 	@Override
 	public String toString() {
 		return "Doctor [did=" + did + ", name=" + name + ", email=" + email + ", password=" + password
 				+ ", cnfPassword=" + cnfPassword + ", phone=" + phone + ", specialization=" + specialization
 				+ ", qualification=" + qualification + ", experience=" + experience + ", gender=" + gender + ", status="
-				+ status + ", doctorInfo=" + doctorInfo + "]";
+				+ status + ", doctorInfo=" + doctorInfo + ", appointments=" + appointments + "]";
 	}
+
 	
 	
 }

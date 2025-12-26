@@ -20,6 +20,13 @@ if(patient == null)
 %>
 
 
+<c:if test="${not empty msg}">
+    <div id="toast" class="toast">
+        ${msg}
+    </div>
+</c:if>
+
+
 
 <!DOCTYPE html>
 <html>
@@ -637,6 +644,39 @@ if(patient == null)
     text-align: center;
 }
 
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #10b981, #34d399);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    animation: slideIn 0.5s ease, fadeOut 0.5s ease 3s forwards;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+}
+
+
     
 </style>
 
@@ -778,6 +818,17 @@ if(patient == null)
                 </a>
             </div>
         </div>
+        
+        
+        
+        
+ <script>
+    setTimeout(() => {
+        const toast = document.getElementById("toast");
+        if (toast) toast.remove();
+    }, 3500);
+</script>
+        
 
 </div>
 </body>
