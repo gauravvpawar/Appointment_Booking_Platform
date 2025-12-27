@@ -52,8 +52,10 @@ public class PatientController
 	
     
 	@RequestMapping("/")
-	public String home()
+	public String home(Model m)
 	{
+		List<Doctor> doctorList = ds.findAllDoctor();
+		m.addAttribute("doctorList", doctorList);
 		return "index";
 	}
 	
@@ -338,36 +340,66 @@ public class PatientController
 
 	
 	// to view Booked Appointments
-	  @GetMapping("/ViewAppointment/{patientId}/{appointmentId}")
-	    public String viewAppointment(@PathVariable int patientId, @PathVariable int appointmentId, Model m) {
-	        Patient patient = ps.findById(patientId);
-	        Appointments appointment = as.findById(appointmentId);
+	 @GetMapping("/ViewAppointment/{patientId}/{appointmentId}")
+	    public String viewAppointmentDetails(@PathVariable int patientId, 
+	                                         @PathVariable int appointmentId, 
+	                                         Model m, HttpSession hs) {
+	        Patient patient = (Patient) hs.getAttribute("patient");
 	        
-	        if(patient != null && appointment != null) {
-	            m.addAttribute("patient", patient);
-	            m.addAttribute("appointment", appointment);
+	        if(patient == null) {
+	            return "redirect:/patient/login";
 	        }
 	        
-	        return "Patient/ViewAppointment";
+	        if(patient.getId() != patientId) {
+	            return "redirect:/patient/DashBoard/" + patient.getId();
+	        }
+	        
+	        Appointments appointment = as.findById(appointmentId);
+	        
+	        if(appointment == null || appointment.getPatient().getId() != patientId) {
+	            m.addAttribute("errorMsg", "Appointment not found");
+	            return "redirect:/patient/DashBoard/" + patientId;
+	        }
+	        
+	        m.addAttribute("patient", patient);
+	        m.addAttribute("appointment", appointment);
+	        m.addAttribute("doctor", appointment.getDoctor());
+	        
+	        return "Patient/AppointmentDetailsModal"; 
 	    }
 	    
 	    // Add method to cancel appointment
-	    @GetMapping("/CancelAppointment/{patientId}/{appointmentId}")
-	    public String cancelAppointment(@PathVariable int patientId, @PathVariable int appointmentId, 
-	                                   RedirectAttributes redirectAttributes) {
+	    @PostMapping("/CancelAppointment/{patientId}/{appointmentId}")
+	    public String cancelAppointment(@PathVariable int patientId, 
+	                                    @PathVariable int appointmentId,
+	                                    RedirectAttributes redirectAttributes,
+	                                    HttpSession hs) {
+	        Patient patient = (Patient) hs.getAttribute("patient");
+	        
+	        if(patient == null || patient.getId() != patientId) {
+	            return "redirect:/patient/login";
+	        }
+	        
 	        Appointments appointment = as.findById(appointmentId);
 	        
-	        if(appointment != null && appointment.getPatient().getId() == patientId) {
+	        if(appointment == null || appointment.getPatient().getId() != patientId) {
+	            redirectAttributes.addFlashAttribute("msg", "Appointment not found");
+	            return "redirect:/patient/DashBoard/" + patientId;
+	        }
+	        
+	        // Only allow cancellation if status is Pending or Confirmed
+	        if(appointment.getAppointment_status().equals("Pending") || 
+	           appointment.getAppointment_status().equals("Confirmed")) {
 	            appointment.setAppointment_status("Cancelled");
-	            
 	            as.saveAppointment(appointment);
-	            redirectAttributes.addFlashAttribute("msg", "Appointment Cancelled Successfully!");
+	            redirectAttributes.addFlashAttribute("msg", "Appointment cancelled successfully");
 	        } else {
-	            redirectAttributes.addFlashAttribute("msg", "Cannot cancel appointment!");
+	            redirectAttributes.addFlashAttribute("msg", "Cannot cancel this appointment");
 	        }
 	        
 	        return "redirect:/patient/DashBoard/" + patientId;
 	    }
+
 	
 	
 

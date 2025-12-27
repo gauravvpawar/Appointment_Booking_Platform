@@ -38,6 +38,17 @@ public class Appointments
     
     private String reason;
     
+    private double consultationFee = 500.0; // Default fee
+
+	 // Getter and Setter
+	 public double getConsultationFee() {
+	     return consultationFee;
+	 }
+	
+	 public void setConsultationFee(double consultationFee) {
+	     this.consultationFee = consultationFee;
+	 }
+    
     
     @Column(columnDefinition = "timestamp default current_timestamp")
     private Timestamp createdAt = Timestamp.valueOf(LocalDateTime.now()); 
@@ -122,13 +133,14 @@ public class Appointments
 		this.createdAt = createdAt;
 	}
 
-
 	@Override
 	public String toString() {
 		return "Appointments [appt_id=" + appt_id + ", patient=" + patient + ", doctor=" + doctor
 				+ ", appointment_date=" + appointment_date + ", appointment_time=" + appointment_time
-				+ ", appointment_status=" + appointment_status + ", reason=" + reason + ", createdAt=" + createdAt
-				+ "]";
+				+ ", appointment_status=" + appointment_status + ", reason=" + reason + ", consultationFee="
+				+ consultationFee + ", createdAt=" + createdAt + "]";
 	}
+
+	
 
 }
