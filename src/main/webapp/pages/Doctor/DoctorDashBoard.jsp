@@ -1,38 +1,11 @@
-<%@page import="com.example.demo.Model.Doctor"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-
- <%
-HttpSession s1 = request.getSession();
-Doctor doctor = (Doctor)s1.getAttribute("doctor");
-
-if(doctor == null)
-{
-    out.println("<script>");
-    out.println("alert('You cannot access directly ! Login first')");
-    out.println("window.location.href = './'");
-    out.println("</script>");
-}
-%>   
-
-
-<c:if test="${not empty msg}">
-    <div id="toast" class="toast">
-        ${msg}
-    </div>
-</c:if>
-
-    
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-
- <title>Doctor Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<title>Doctor Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
     :root {
@@ -328,27 +301,19 @@ if(doctor == null)
     }
 
     .profile-avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    margin: 0 auto 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2.5rem;
-    border: 4px solid white;
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
-    overflow: hidden; /* IMPORTANT */
-	}
-	
-	.profile-avatar img.profile-img {
-	    width: 100%;
-	    height: 100%;
-	    object-fit: cover;
-	}
-	
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2.5rem;
+        border: 4px solid white;
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+    }
 
     .doctor-info h2 {
         font-size: 1.5rem;
@@ -565,12 +530,22 @@ if(doctor == null)
         color: var(--warning);
     }
 
-    .status-monitoring {
-        background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(6, 182, 212, 0.2));
-        color: var(--info);
+    .status-confirmed {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0.2));
+        color: var(--primary);
     }
 
-    .view-btn {
+    .status-cancelled {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.2));
+        color: var(--danger);
+    }
+
+    .status-rejected {
+        background: linear-gradient(135deg, rgba(120, 120, 120, 0.15), rgba(120, 120, 120, 0.2));
+        color: #64748b;
+    }
+
+    .action-btn {
         padding: 6px 16px;
         background: linear-gradient(135deg, var(--primary), var(--primary-light));
         color: white;
@@ -583,11 +558,28 @@ if(doctor == null)
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        text-decoration: none;
     }
 
-    .view-btn:hover {
+    .action-btn:hover {
         background: linear-gradient(135deg, var(--primary-dark), var(--primary));
         transform: translateY(-1px);
+    }
+
+    .action-btn-danger {
+        background: linear-gradient(135deg, var(--danger), #f87171);
+    }
+
+    .action-btn-danger:hover {
+        background: linear-gradient(135deg, #dc2626, var(--danger));
+    }
+
+    .action-btn-success {
+        background: linear-gradient(135deg, var(--success), #34d399);
+    }
+
+    .action-btn-success:hover {
+        background: linear-gradient(135deg, #059669, var(--success));
     }
 
     /* NO APPOINTMENTS STATE */
@@ -712,349 +704,616 @@ if(doctor == null)
         animation-delay: 0.3s;
     }
     
-    
-    .toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: linear-gradient(135deg, #10b981, #34d399);
-    color: white;
-    padding: 14px 24px;
-    border-radius: 10px;
-    font-weight: 600;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    z-index: 9999;
-    animation: slideIn 0.5s ease, fadeOut 0.5s ease 3s forwards;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(50px);
+    /* Appointment Actions */
+    .appointment-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
     }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes fadeOut {
-    to {
-        opacity: 0;
-        transform: translateX(50px);
-    }
-}
     
+    .file-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        border: 2px solid var(--border);
+    }
     
+    /* Alert Messages */
+    .alert {
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .alert-success {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.15));
+        color: var(--success);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .alert-error {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.15));
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .alert i {
+        font-size: 1.2rem;
+    }
 </style>
 </head>
 <body>
 
-
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <div class="sidebar-header">
-        <div class="brand">
-            <div class="brand-logo">
-                <i class="fas fa-stethoscope"></i>
+<c:if test="${not empty doctor}">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fas fa-stethoscope"></i>
+                </div>
+                <div class="brand-text">
+                    <h2>MediCare</h2>
+                    <p>Doctor Portal</p>
+                </div>
             </div>
-            <div class="brand-text">
-                <h2>MediCare </h2>
-                <p>Doctor Portal</p>
+        </div>
+        
+        <div class="sidebar-menu">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="${pageContext.request.contextPath}/doctor/dashboard/${doctor.did}" class="nav-link active">
+                        <span class="nav-icon"><i class="fas fa-home"></i></span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#upcoming-appointments" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span>
+                        <span>Appointments</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/doctor/ViewAppointments/${doctor.did}" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-user-injured"></i></span>
+                        <span>All Appointments</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/doctor/DoctorEditForm/${doctor.did}" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-user-edit"></i></span>
+                        <span>Edit Profile</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/doctor/DoctorReport/${doctor.did}" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="page-title">
+                <h1>Doctor Dashboard</h1>
+            </div>
+            <div class="user-actions">
+                <div class="user-profile">
+                    <c:choose>
+                        <c:when test="${not empty doctor.doctorInfo.fileName}">
+                            <div class="user-avatar" style="background-image: url('${pageContext.request.contextPath}/images/Doctor/Profiles/${doctor.doctorInfo.fileName}'); background-size: cover; background-position: center;">
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="user-avatar">
+                                ${doctor.name.charAt(0)}
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                    <div class="user-info">
+                        <h4>Dr. ${doctor.name}</h4>
+                        <p>${doctor.specialization}</p>
+                    </div>
+                </div>
+                <a href="${pageContext.request.contextPath}/doctor/DoctorLogOutProcess" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- CONTENT AREA -->
+        <div class="content-area">
+            <!-- Display Messages -->
+            <c:if test="${not empty msg}">
+                <div class="alert alert-success fade-in">
+                    <i class="fas fa-check-circle"></i>
+                    ${msg}
+                </div>
+            </c:if>
+            
+            <c:if test="${not empty errorMsg}">
+                <div class="alert alert-error fade-in">
+                    <i class="fas fa-exclamation-circle"></i>
+                    ${errorMsg}
+                </div>
+            </c:if>
+
+            <!-- STATISTICS -->
+            <div class="stats-grid">
+                <div class="stat-card fade-in">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary), var(--primary-light));">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>
+                                <c:choose>
+                                    <c:when test="${not empty totalAppointments}">${totalAppointments}</c:when>
+                                    <c:otherwise>0</c:otherwise>
+                                </c:choose>
+                            </h3>
+                            <p>Total Appointments</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card fade-in delay-1">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--success), #34d399);">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>
+                                <c:choose>
+                                    <c:when test="${not empty confirmedAppointments}">${confirmedAppointments}</c:when>
+                                    <c:otherwise>0</c:otherwise>
+                                </c:choose>
+                            </h3>
+                            <p>Confirmed Today</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card fade-in delay-2">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--warning), #fbbf24);">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>
+                                <c:choose>
+                                    <c:when test="${not empty pendingAppointments}">${pendingAppointments}</c:when>
+                                    <c:otherwise>0</c:otherwise>
+                                </c:choose>
+                            </h3>
+                            <p>Pending Approval</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card fade-in delay-3">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, var(--info), #22d3ee);">
+                            <i class="fas fa-user-injured"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>
+                                <c:choose>
+                                    <c:when test="${not empty uniquePatients}">${uniquePatients}</c:when>
+                                    <c:otherwise>0</c:otherwise>
+                                </c:choose>
+                            </h3>
+                            <p>Unique Patients</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFILE SECTION -->
+            <div class="profile-section">
+                <!-- PROFILE CARD -->
+                <div class="profile-card fade-in">
+                    <div class="profile-avatar">
+                        <c:choose>
+                            <c:when test="${not empty doctor.doctorInfo.fileName}">
+                                <img src="${pageContext.request.contextPath}/images/Doctor/Profiles/${doctor.doctorInfo.fileName}" 
+                                     alt="Doctor Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            </c:when>
+                            <c:otherwise>
+                                <i class="fas fa-user-md"></i>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                    <div class="doctor-info">
+                        <h2>Dr. ${doctor.name}</h2>
+                        <div class="doctor-specialization">
+                            ${doctor.specialization}
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-text">
+                                <div class="contact-label">Email</div>
+                                <div class="contact-value">${doctor.email}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-text">
+                                <div class="contact-label">Phone</div>
+                                <div class="contact-value">${doctor.phone}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="contact-text">
+                                <div class="contact-label">Qualification</div>
+                                <div class="contact-value">${doctor.qualification}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="contact-text">
+                                <div class="contact-label">Experience</div>
+                                <div class="contact-value">${doctor.experience} years</div>
+                            </div>
+                        </div>
+                        
+                        <c:if test="${not empty doctor.doctorInfo.dob}">
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-birthday-cake"></i>
+                                </div>
+                                <div class="contact-text">
+                                    <div class="contact-label">Date of Birth</div>
+                                    <div class="contact-value">${doctor.doctorInfo.dob}</div>
+                                </div>
+                            </div>
+                        </c:if>
+                        
+                        <c:if test="${not empty doctor.doctorInfo.address}">
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="contact-text">
+                                    <div class="contact-label">Address</div>
+                                    <div class="contact-value">${doctor.doctorInfo.address}</div>
+                                </div>
+                            </div>
+                        </c:if>
+                    </div>
+                    
+                    <div class="status-badge">
+                        <i class="fas fa-circle"></i>
+                        ${doctor.status}
+                    </div>
+                    
+                    <div class="profile-actions">
+                        <a href="${pageContext.request.contextPath}/doctor/DoctorEditForm/${doctor.did}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i>
+                            Edit Profile
+                        </a>
+                        <a href="${pageContext.request.contextPath}/doctor/DoctorLogOutProcess" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+
+                <!-- RECENT PATIENTS TABLE -->
+                <div class="data-card fade-in delay-1">
+                    <div class="card-header">
+                        <h3><i class="fas fa-user-injured"></i> Recent Patients</h3>
+                        <a href="${pageContext.request.contextPath}/doctor/ViewAppointments/${doctor.did}" class="action-btn">
+                            <i class="fas fa-eye"></i>
+                            View All
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Patient Name</th>
+                                        <th>Last Appointment</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:choose>
+                                        <c:when test="${not empty recentPatients}">
+                                            <c:forEach var="appointment" items="${recentPatients}">
+                                                <tr>
+                                                    <td>
+                                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                                            <c:choose>
+                                                                <c:when test="${not empty appointment.patient.patientinfo.fileName}">
+                                                                    <div class="file-avatar" 
+                                                                         style="background-image: url('${pageContext.request.contextPath}/images/${appointment.patient.patientinfo.fileName}')">
+                                                                    </div>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                                                        ${appointment.patient.name.charAt(0)}
+                                                                    </div>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                            <div>
+                                                                <strong>${appointment.patient.name}</strong><br>
+                                                                <small style="color: var(--text-light); font-size: 0.8rem;">${appointment.patient.phone}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        ${appointment.appointment_date}<br>
+                                                        <small style="color: var(--text-light);">${appointment.appointment_time}</small>
+                                                    </td>
+                                                    <td>
+                                                        <span class="status-tag 
+                                                            <c:choose>
+                                                                <c:when test="${appointment.appointment_status == 'Confirmed'}">status-confirmed</c:when>
+                                                                <c:when test="${appointment.appointment_status == 'Pending'}">status-pending</c:when>
+                                                                <c:when test="${appointment.appointment_status == 'Cancelled'}">status-cancelled</c:when>
+                                                                <c:when test="${appointment.appointment_status == 'Rejected'}">status-rejected</c:when>
+                                                                <c:otherwise>status-pending</c:otherwise>
+                                                            </c:choose>">
+                                                            <i class="fas fa-circle"></i> ${appointment.appointment_status}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="appointment-actions">
+                                                            <a href="${pageContext.request.contextPath}/doctor/ViewAppointmentDetails/${doctor.did}/${appointment.appt_id}" 
+                                                               class="action-btn" style="padding: 4px 12px;">
+                                                                <i class="fas fa-eye"></i> View
+                                                            </a>
+                                                            <c:if test="${appointment.appointment_status == 'Pending'}">
+                                                                <form action="/doctor/UpdateAppointmentStatus/${doctor.did}" 
+                                                                      method="post" style="display: inline;">
+                                                                    <input type="hidden" name="appointmentId" value="${appointment.appt_id}">
+                                                                    <button type="submit" name="status" value="Confirmed" 
+                                                                            class="action-btn action-btn-success" style="padding: 4px 12px;">
+                                                                        <i class="fas fa-check"></i> Accept
+                                                                    </button>
+                                                                </form>
+                                                            </c:if>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <tr>
+                                                <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-light);">
+                                                    <i class="fas fa-user-injured" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+                                                    <p>No recent patients</p>
+                                                </td>
+                                            </tr>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APPOINTMENTS SECTION -->
+            <div class="data-card fade-in delay-2" id="upcoming-appointments">
+                <div class="card-header">
+                    <h3><i class="fas fa-calendar-alt"></i> Today's Appointments</h3>
+                    <a href="/doctor/ViewAppointments/${doctor.did}" class="action-btn">
+                        <i class="fas fa-calendar"></i>
+                        View All Appointments
+                    </a>
+                </div>
+                
+                <div class="card-body">
+                    <c:choose>
+                        <c:when test="${not empty todayAppointments}">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Patient Name</th>
+                                            <th>Time</th>
+                                            <th>Reason</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="appointment" items="${todayAppointments}">
+                                            <tr>
+                                                <td>
+                                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                                        <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                                            ${appointment.patient.name.charAt(0)}
+                                                        </div>
+                                                        <div>
+                                                            <strong>${appointment.patient.name}</strong><br>
+                                                            <small style="color: var(--text-light); font-size: 0.8rem;">
+                                                                Age: ${appointment.patient.age} | ${appointment.patient.gender}
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong>${appointment.appointment_time}</strong><br>
+                                                    <small style="color: var(--text-light);">Today</small>
+                                                </td>
+                                                <td>${appointment.reason}</td>
+                                                <td>
+                                                    <span class="status-tag 
+                                                        <c:choose>
+                                                            <c:when test="${appointment.appointment_status == 'Confirmed'}">status-confirmed</c:when>
+                                                            <c:when test="${appointment.appointment_status == 'Pending'}">status-pending</c:when>
+                                                            <c:when test="${appointment.appointment_status == 'Cancelled'}">status-cancelled</c:when>
+                                                            <c:when test="${appointment.appointment_status == 'Rejected'}">status-rejected</c:when>
+                                                            <c:otherwise>status-pending</c:otherwise>
+                                                        </c:choose>">
+                                                        <i class="fas fa-circle"></i> ${appointment.appointment_status}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="appointment-actions">
+                                                        <a href="${pageContext.request.contextPath}/doctor/ViewAppointmentDetails/${doctor.did}/${appointment.appt_id}" 
+                                                           class="action-btn" style="padding: 4px 12px;">
+                                                            <i class="fas fa-eye"></i> View
+                                                        </a>
+                                                        <c:if test="${appointment.appointment_status == 'Pending'}">
+                                                            <form action="${pageContext.request.contextPath}/doctor/UpdateAppointmentStatus/${doctor.did}" 
+                                                                  method="post" style="display: inline;">
+                                                                <input type="hidden" name="appointmentId" value="${appointment.appt_id}">
+                                                                <div style="display: flex; gap: 4px;">
+                                                                    <button type="submit" name="status" value="Confirmed" 
+                                                                            class="action-btn action-btn-success" style="padding: 4px 8px;">
+                                                                        <i class="fas fa-check"></i>
+                                                                    </button>
+                                                                    <button type="submit" name="status" value="Rejected" 
+                                                                            class="action-btn action-btn-danger" style="padding: 4px 8px;">
+                                                                        <i class="fas fa-times"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </c:if>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-times"></i>
+                                <h4>No Appointments Today</h4>
+                                <p>You don't have any scheduled appointments for today.</p>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="sidebar-menu">
-        <ul class="nav-list">
-            <li class="nav-item">
-                <a href="#" class="nav-link active">
-                    <span class="nav-icon"><i class="fas fa-home"></i></span>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#Upcomming_appointment" class="nav-link">
-                    <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span>
-                    <span>Appointments</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <span class="nav-icon"><i class="fas fa-user-injured"></i></span>
-                    <span>Patients</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <span class="nav-icon"><i class="fas fa-prescription"></i></span>
-                    <span>Prescriptions</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
-                    <span>Reports</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <span class="nav-icon"><i class="fas fa-cog"></i></span>
-                    <span>Settings</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
+</c:if>
 
-<!-- MAIN CONTENT -->
-<div class="main-content">
-    <!-- HEADER -->
-    <div class="header">
-        <div class="page-title">
-            <h1>Doctor Dashboard</h1>
-        </div>
-        <div class="user-actions">
-            <div class="user-profile">
-                <div class="user-avatar">
-                     ${doctor.name.charAt(0)}
-                </div>
-                <div class="user-info">
-                    <h4>${doctor.name }</h4>
-                    <p>${doctor.specialization}</p>
-                </div>
+<c:if test="${empty doctor}">
+    <div style="width: 100%; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--light-bg);">
+        <div style="text-align: center; padding: 40px; background: white; border-radius: 16px; box-shadow: var(--shadow); max-width: 400px;">
+            <div style="font-size: 3rem; color: var(--danger); margin-bottom: 20px;">
+                <i class="fas fa-exclamation-triangle"></i>
             </div>
-            <a href="/doctor/DoctorLogOutProcess" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-                Logout
+            <h2 style="color: var(--text-dark); margin-bottom: 10px;">Access Denied</h2>
+            <p style="color: var(--text-light); margin-bottom: 25px;">Please log in to access the dashboard</p>
+            <a href="${pageContext.request.contextPath}/" style="display: inline-block; padding: 12px 30px; 
+               background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; 
+               text-decoration: none; border-radius: 8px; font-weight: 600;">
+                <i class="fas fa-sign-in-alt"></i> Go to Login
             </a>
         </div>
     </div>
-
-    <!-- CONTENT AREA -->
-    <div class="content-area">
-        <!-- STATISTICS -->
-        <div class="stats-grid">
-            <div class="stat-card fade-in">
-                <div class="stat-header">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary), var(--primary-light));">
-                        <i class="fas fa-user-injured"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3>42</h3>
-                        <p>Total Patients</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="stat-card fade-in delay-1">
-                <div class="stat-header">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--success), #34d399);">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3>18</h3>
-                        <p>Today's Appointments</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="stat-card fade-in delay-2">
-                <div class="stat-header">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--warning), #fbbf24);">
-                        <i class="fas fa-prescription"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3>36</h3>
-                        <p>Prescriptions This Month</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="stat-card fade-in delay-3">
-                <div class="stat-header">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, var(--info), #22d3ee);">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3>92%</h3>
-                        <p>Patient Satisfaction</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PROFILE SECTION -->
-
- <!-- PROFILE SECTION -->
-        <div class="profile-section">
-            <!-- PROFILE CARD -->
-            <div class="profile-card fade-in">
-               
-          <div class="profile-avatar">
-    <c:choose>
-        <c:when test="${doctor.doctorInfo ne null and not empty doctor.doctorInfo.fileName}">
-            <img 
-                src="/images/Doctor/Profiles/${doctor.doctorInfo.fileName}" 
-                alt="Doctor Image"
-                class="profile-img"
-            />
-        </c:when>
-        <c:otherwise>
-            <i class="fas fa-user-md"></i>
-        </c:otherwise>
-    </c:choose>
-</div>
-
-		
-		<div class="doctor-info">
-		    <h2>${doctor.name}</h2>
-		    <div class="doctor-specialization">
-		        ${doctor.specialization}
-		    </div>
-		</div>
-               
-                
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="contact-text">
-                            <div class="contact-label">Email</div>
-                            <div class="contact-value">${doctor.email}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                            <i class="fas fa-phone"></i>
-                        </div>
-                        <div class="contact-text">
-                            <div class="contact-label">Phone</div>
-                            <div class="contact-value">${doctor.phone}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <div class="contact-text">
-                            <div class="contact-label">Experience</div>
-                            <div class="contact-value">${doctor.experience} years</div>
-                        </div>
-                    </div>
-                    
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                            <i class="fas fa-venus-mars"></i>
-                        </div>
-                        <div class="contact-text">
-                            <div class="contact-label">Gender</div>
-                            <div class="contact-value">${doctor.gender}</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="status-badge">
-                    <i class="fas fa-circle"></i>
-                   	${doctor.status}
-                </div>
-                
-                <div class="profile-actions">
-                    <a href="/doctor/DoctorEditForm/${doctor.did}" class="btn btn-primary">
-                        <i class="fas fa-edit"></i>
-                        Edit Profile
-                    </a>
-                    <a href="/doctor/DoctorDeleteProcess/${doctor.did}" class="btn btn-danger">
-                        <i class="fas fa-trash-alt"></i>
-                        Delete Profile
-                    </a>
-                </div>
-            </div>
-
-
-
-            <!-- PATIENTS TABLE -->
-            <div class="data-card fade-in delay-1">
-                <div class="card-header">
-                    <h3><i class="fas fa-user-injured"></i> Recent Patients</h3>
-                    <button class="view-btn">
-                        <i class="fas fa-plus"></i>
-                        Add Patient
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Patient Name</th>
-                                    <th>Age</th>
-                                    <th>Condition</th>
-                                    <th>Last Visit</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Rajesh Kumar</td>
-                                    <td>45</td>
-                                    <td>Hypertension</td>
-                                    <td>2023-10-15</td>
-                                    <td><span class="status-tag status-active">Stable</span></td>
-                                    <td><button class="view-btn"><i class="fas fa-eye"></i> View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Priya Sharma</td>
-                                    <td>32</td>
-                                    <td>Diabetes</td>
-                                    <td>2023-10-12</td>
-                                    <td><span class="status-tag status-active">Improving</span></td>
-                                    <td><button class="view-btn"><i class="fas fa-eye"></i> View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Amit Patel</td>
-                                    <td>58</td>
-                                    <td>Arthritis</td>
-                                    <td>2023-10-10</td>
-                                    <td><span class="status-tag status-pending">Follow-up</span></td>
-                                    <td><button class="view-btn"><i class="fas fa-eye"></i> View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Sunita Singh</td>
-                                    <td>29</td>
-                                    <td>Migraine</td>
-                                    <td>2023-10-08</td>
-                                    <td><span class="status-tag status-active">Stable</span></td>
-                                    <td><button class="view-btn"><i class="fas fa-eye"></i> View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Vikram Joshi</td>
-                                    <td>65</td>
-                                    <td>Cardiac Issue</td>
-                                    <td>2023-10-05</td>
-                                    <td><span class="status-tag status-monitoring">Monitoring</span></td>
-                                    <td><button class="view-btn"><i class="fas fa-eye"></i> View</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+</c:if>
 
 <script>
-    setTimeout(() => {
-        const toast = document.getElementById("toast");
-        if (toast) toast.remove();
-    }, 3500);
+    // Highlight current nav link
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentUrl = window.location.href;
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        navLinks.forEach(link => {
+            if (link.href === currentUrl) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+        
+        // Add smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if(targetId !== '#') {
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+        
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 500);
+            });
+        }, 5000);
+    });
+    
+    // Handle appointment status updates
+    function updateAppointmentStatus(appointmentId, status) {
+        if(confirm('Are you sure you want to ' + status.toLowerCase() + ' this appointment?')) {
+            fetch('${pageContext.request.contextPath}/doctor/UpdateAppointmentStatus/${doctor.did}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `appointmentId=${appointmentId}&status=${status}`
+            })
+            .then(response => {
+                if(response.ok) {
+                    location.reload();
+                } else {
+                    alert('Error updating appointment status');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating appointment status');
+            });
+        }
+    }
 </script>
-
-   
-</div>
 </body>
 </html>

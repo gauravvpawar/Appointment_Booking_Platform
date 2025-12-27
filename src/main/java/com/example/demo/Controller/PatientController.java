@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -41,7 +42,8 @@ public class PatientController
 	@Autowired
 	DoctorService ds;
 
-	
+	@Autowired
+	AppointmentService as;
 
 
     PatientController(PasswordEncoder passwordEncoder) {
@@ -120,12 +122,15 @@ public class PatientController
 		
 		hs.setAttribute("patient", patient);
 		
-		System.out.println("Patient details : "  + patient);
+		System.out.println("Patient details : "  + patient.getName());
 		
 		m.addAttribute("patient", patient);
 		
 		m.addAttribute("msg", "Logged in successfully");
-
+		
+		 // Get patient's existing appointments
+        List<Appointments> patientAppointments = as.findByPatient(patient);
+        m.addAttribute("patientAppointments", patientAppointments);
 		
 		return "Patient/PatientDashBoard";
 	}
@@ -137,21 +142,25 @@ public class PatientController
 		
 		hs.setAttribute("patient", patient);
 		
-		System.out.println("Patient details : "  + patient);
+//		System.out.println("Patient details : "  + patient.getName());
 		
 		m.addAttribute("patient", patient);
 		
 		redirectAttributes.addFlashAttribute("msg", "Logged in successfully");
+		
+		 // Get patient's existing appointments
+        List<Appointments> patientAppointments = as.findByPatient(patient);
+        m.addAttribute("patientAppointments", patientAppointments);
 		
 		return "Patient/PatientDashBoard";
 	}
 	
 	
 	@GetMapping("/logOut")
-	public String logOut(HttpSession hs)
+	public String logOut(HttpSession hs , RedirectAttributes redirectAttributes)
 	{
 		hs.invalidate();
-		
+		redirectAttributes.addFlashAttribute("msg", "Logged Out successfully");
 		return "redirect:/";
 	}
 	
@@ -193,7 +202,7 @@ public class PatientController
 		
 		// to encode the patient password
 		
-		System.out.println(patient);
+//		System.out.println(patient);
 		
 		m.addAttribute("patient", patient);
 		
@@ -263,40 +272,103 @@ public class PatientController
 	
 	// to book appointment
 	@GetMapping("/BookAppointment/{id}")
-	public String bookAppointment(@PathVariable int id , Model m)
-	{
-		Patient patient = ps.findById(id);
-		
-		m.addAttribute("patient", patient);
-		
-		// to return the list of doctor who is active
-		List<Doctor> doctorList = ds.findAllDoctor().stream()
-													.filter(d -> "Active".equals(d.getStatus())).toList();
-		
-		m.addAttribute("doctors", doctorList);
-		
-		return "Patient/AppointmentBook";
+    public String bookAppointment(@PathVariable int id , Model m, HttpSession session)
+    {
+        Patient patient = ps.findById(id);
+        
+        if(patient == null) {
+            return "redirect:/";
+        }
+        
+        m.addAttribute("patient", patient);
+        
+       
+        
+        // to return the list of doctor who is active
+        List<Doctor> doctorList = ds.findAllDoctor().stream()
+                                                    .filter(d -> "Active".equals(d.getStatus())).toList();
+        
+        m.addAttribute("doctors", doctorList);
+        
+        // Add new appointment object for form binding
+        Appointments newAppointment = new Appointments();
+        m.addAttribute("appointment", newAppointment);
+        
+        return "Patient/AppointmentBook";
+    }
+
+	// to book Appointment
+	@PostMapping("/RegisterAppointment/{patientId}")
+	public String registerAppointment(
+	        @PathVariable int patientId,
+	        @ModelAttribute Appointments appointment,
+	        @RequestParam("doctorId") int doctorId,
+	        RedirectAttributes redirectAttributes) {
+
+	    try {
+	        Patient patient = ps.findById(patientId);
+	        Doctor doctor = ds.findById(doctorId);
+
+	        if (patient == null || doctor == null) {
+	            redirectAttributes.addFlashAttribute("msg", "Invalid patient or doctor!");
+	            return "redirect:/patient/BookAppointment/" + patientId;
+	        }
+
+	        appointment.setPatient(patient);
+	        appointment.setDoctor(doctor);
+	        appointment.setAppointment_status("Pending");
+
+	        as.saveAppointment(appointment);
+
+	        redirectAttributes.addFlashAttribute(
+	                "msg",
+	                "Appointment booked successfully! Waiting for doctor confirmation."
+	        );
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        redirectAttributes.addFlashAttribute(
+	                "errorMsg",
+	                "Error booking appointment!"
+	        );
+	    }
+
+	    return "redirect:/patient/DashBoard/" + patientId;
 	}
 
 	
-////	 register appointment on working
-////	 working
-//	@PostMapping("/RegisterAppointment/{id}")
-//	public String registerAppointment(@PathVariable int id , @ModelAttribute Appointments appointment , RedirectAttributes redirectAttributes)
-//	{
-//		System.out.println(appointment);
-//		
-//		Patient patient = ps.findById(id);
-//		
-//		Doctor doctor  = ds.findById(appointment.getDoctor().getDid());
-//		
-//		appointment.setDoctor(doctor);
-//		appointment.setPatient(patient);
-//		
-//		as.saveAppointment(appointment);
-//		
-//		 redirectAttributes.addFlashAttribute("msg", "Appointment Booked successfully!");
-//			
-//		return "redirect:/patient/DashBoard/{id}";
-//	}
+	// to view Booked Appointments
+	  @GetMapping("/ViewAppointment/{patientId}/{appointmentId}")
+	    public String viewAppointment(@PathVariable int patientId, @PathVariable int appointmentId, Model m) {
+	        Patient patient = ps.findById(patientId);
+	        Appointments appointment = as.findById(appointmentId);
+	        
+	        if(patient != null && appointment != null) {
+	            m.addAttribute("patient", patient);
+	            m.addAttribute("appointment", appointment);
+	        }
+	        
+	        return "Patient/ViewAppointment";
+	    }
+	    
+	    // Add method to cancel appointment
+	    @GetMapping("/CancelAppointment/{patientId}/{appointmentId}")
+	    public String cancelAppointment(@PathVariable int patientId, @PathVariable int appointmentId, 
+	                                   RedirectAttributes redirectAttributes) {
+	        Appointments appointment = as.findById(appointmentId);
+	        
+	        if(appointment != null && appointment.getPatient().getId() == patientId) {
+	            appointment.setAppointment_status("Cancelled");
+	            
+	            as.saveAppointment(appointment);
+	            redirectAttributes.addFlashAttribute("msg", "Appointment Cancelled Successfully!");
+	        } else {
+	            redirectAttributes.addFlashAttribute("msg", "Cannot cancel appointment!");
+	        }
+	        
+	        return "redirect:/patient/DashBoard/" + patientId;
+	    }
+	
+	
+
 }

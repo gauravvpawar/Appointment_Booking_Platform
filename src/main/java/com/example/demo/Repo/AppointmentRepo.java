@@ -5,9 +5,12 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.demo.Model.Appointments;
+import com.example.demo.Model.Doctor;
 import com.example.demo.Model.Patient;
 
 public interface AppointmentRepo extends JpaRepository<Appointments, Integer>
 {
-	public List<Appointments> findByPatient(Patient patient);
+	  public List<Appointments> findByPatient(Patient patient);
+	    
+	   public List<Appointments> findByDoctor(Doctor doctor);
 }

@@ -2,6 +2,7 @@ package com.example.demo.Model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,7 +32,7 @@ public class Doctor
 	
 	private DoctorInfo doctorInfo = new DoctorInfo();
 	
-	@OneToMany
+	@OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
 	private List<Appointments> appointments;
 
 	public int getDid() {
@@ -146,6 +147,6 @@ public class Doctor
 				+ status + ", doctorInfo=" + doctorInfo + ", appointments=" + appointments + "]";
 	}
 
-	
+
 	
 }

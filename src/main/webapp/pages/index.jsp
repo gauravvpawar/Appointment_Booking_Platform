@@ -1,9 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
+    
+ <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+    
 
 <c:if test="${not empty msg}">
-    <p id="flashMsg" style="color:green">${msg}</p>
+    <div id="toast" class="toast show">
+        ${msg}
+    </div>
 </c:if>
 
 
@@ -95,35 +99,44 @@
             color: var(--primary);
         }
         
-        .auth-buttons {
-            display: flex;
-            gap: 10px;
-        }
         
-        .btn {
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-        }
-        
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
+		        /* --- BUTTON STYLES --- */
+		.btn {
+		    display: inline-block;
+		    padding: 8px 16px;
+		    border-radius: 4px;
+		    font-weight: 500;
+		    cursor: pointer;
+		    transition: all 0.3s;
+		    text-decoration: none; /* ensures <a> looks like button */
+		    text-align: center;
+		}
+		
+		/* Primary Button */
+		.btn-primary {
+		    background-color: #2c7fb8;
+		    color: white;
+		    border: none;
+		}
+		
+		.btn-primary:hover {
+		    opacity: 0.9;
+		    transform: translateY(-2px);
+		}
+		
+		/* Outline Button */
+		.btn-outline {
+		    background-color: transparent;
+		    border: 1px solid #2c7fb8;
+		    color: #2c7fb8;
+		}
+		
+		.btn-outline:hover {
+		    background-color: #2c7fb8;
+		    color: white;
+		    transform: translateY(-2px);
+		}
+		        
         
         /* Hero Section */
         .hero {
@@ -393,6 +406,32 @@
                 justify-content: flex-end;
             }
         }
+        
+    .toast {
+	    position: fixed;
+	    top: 20px;
+	    right: 20px;
+	    background: linear-gradient(135deg, #10b981, #34d399);
+	    color: white;
+	    padding: 14px 24px;
+	    border-radius: 10px;
+	    font-weight: 600;
+	    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+	    z-index: 9999;
+	
+	    opacity: 0;
+	    transform: translateX(50px);
+	    pointer-events: none;
+	}
+	
+	.toast.show {
+	    opacity: 1;
+	    transform: translateX(0);
+	    transition: opacity 0.4s ease, transform 0.4s ease;
+	}
+
+
+	
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -416,14 +455,11 @@
                 
                
                 
-                <div class="auth-buttons">
-                    <button class="btn btn-outline" id="patientLoginBtn">
-                    	<a href="patient/login">Patient Login</a>
-                    </button>
-                    <button class="btn btn-primary" id="doctorLoginBtn">
-                    	<a href="/doctor/login">Doctor Login</a>
-                    </button>
-                </div>
+              <div class="auth-buttons">
+				    <a href="patient/login" class="btn btn-outline">Patient Login</a>
+				    <a href="/doctor/login" class="btn btn-primary">Doctor Login</a>
+				</div>
+
                  
             </nav>
         </div>
@@ -506,15 +542,15 @@
             </div>
         </div>
     </footer>
-
+    
 <script>
-    setTimeout(function () {
-        var msg = document.getElementById("flashMsg");
-        if (msg) {
-            msg.style.display = "none";
-        }
-    }, 3000); // 3000 ms = 3 seconds
+    const toast = document.getElementById("toast");
+    if (toast) {
+        setTimeout(() => toast.classList.remove("show"), 3000);
+        setTimeout(() => toast.remove(), 3500);
+    }
 </script>
+
            
 </body>
 </html>

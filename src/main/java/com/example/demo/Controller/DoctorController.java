@@ -2,7 +2,9 @@ package com.example.demo.Controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
@@ -19,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.demo.Config.AppConfig;
+import com.example.demo.Model.Appointments;
 import com.example.demo.Model.Doctor;
 import com.example.demo.Model.DoctorInfo;
+import com.example.demo.Service.AppointmentService;
 import com.example.demo.Service.DoctorService;
 
 @Controller
@@ -33,6 +37,8 @@ public class DoctorController
 	@Autowired
 	DoctorService ds;
 
+	@Autowired
+	 AppointmentService as;
 
     DoctorController(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -93,12 +99,13 @@ public class DoctorController
 		
 		Doctor doctor = ds.findByEmail(email);
 		
-		System.out.println(doctor);
 		
 		 if (doctor == null) {
 		        redirectAttributes.addFlashAttribute("msg", "Doctor email not found");
 		        return "redirect:/";
 		    }
+		 
+		System.out.println(doctor.getName());
 		
 		if(!passwordEncoder.matches(password, doctor.getPassword()))
 		{
@@ -106,11 +113,48 @@ public class DoctorController
 			return "redirect:/";
 		}
 		
-		hs.setAttribute("doctor", doctor);
 		
-		m.addAttribute("doctor", doctor);
+		List<Appointments> allAppointments = as.findByDoctor(doctor);
+	    
+	    // Get today's appointments
+	    List<Appointments> todayAppointments = allAppointments.stream()
+	        .filter(appt -> appt.getAppointment_date().equals(LocalDate.now()))
+	        .collect(Collectors.toList());
+	    
+	    // Get recent appointments (last 10)
+	    List<Appointments> recentAppointments = allAppointments.stream()
+	        .sorted((a1, a2) -> a2.getAppointment_date().compareTo(a1.getAppointment_date()))
+	        .limit(10)
+	        .collect(Collectors.toList());
+	    
+	    // Get unique patients
+	    long uniquePatients = allAppointments.stream()
+	        .map(appt -> appt.getPatient().getId())
+	        .distinct()
+	        .count();
+	    
+	    // Count by status
+	    long pendingAppointments = allAppointments.stream()
+	        .filter(appt -> "Pending".equals(appt.getAppointment_status()))
+	        .count();
+	    
+	    long confirmedAppointments = allAppointments.stream()
+	        .filter(appt -> "Confirmed".equals(appt.getAppointment_status()))
+	        .count();
+	    
+	    // Add statistics to model
+	    m.addAttribute("totalAppointments", allAppointments.size());
+	    m.addAttribute("todayAppointments", todayAppointments);
+	    m.addAttribute("recentPatients", recentAppointments);
+	    m.addAttribute("uniquePatients", uniquePatients);
+	    m.addAttribute("pendingAppointments", pendingAppointments);
+	    m.addAttribute("confirmedAppointments", confirmedAppointments);
+	    m.addAttribute("allAppointments", allAppointments);
+	    m.addAttribute("doctor", doctor);
 		
 		m.addAttribute("msg", "Welcome to Dashboard");
+		
+		
 		
 		return "Doctor/DoctorDashBoard";	
 	}
@@ -184,9 +228,48 @@ public class DoctorController
 	{
 		Doctor doctor = ds.findById(id);
 		
-		hs.setAttribute("doctor", doctor);
-		
-		m.addAttribute("doctor", doctor);
+		    
+		    hs.setAttribute("doctor", doctor);
+		    m.addAttribute("doctor", doctor);
+		    
+		    // Get all appointments for this doctor
+		    List<Appointments> allAppointments = as.findByDoctor(doctor);
+		    
+		    // Get today's appointments
+		    List<Appointments> todayAppointments = allAppointments.stream()
+		        .filter(appt -> appt.getAppointment_date().equals(LocalDate.now()))
+		        .collect(Collectors.toList());
+		    
+		    // Get recent appointments (last 10)
+		    List<Appointments> recentAppointments = allAppointments.stream()
+		        .sorted((a1, a2) -> a2.getAppointment_date().compareTo(a1.getAppointment_date()))
+		        .limit(10)
+		        .collect(Collectors.toList());
+		    
+		    // Get unique patients
+		    long uniquePatients = allAppointments.stream()
+		        .map(appt -> appt.getPatient().getId())
+		        .distinct()
+		        .count();
+		    
+		    // Count by status
+		    long pendingAppointments = allAppointments.stream()
+		        .filter(appt -> "Pending".equals(appt.getAppointment_status()))
+		        .count();
+		    
+		    long confirmedAppointments = allAppointments.stream()
+		        .filter(appt -> "Confirmed".equals(appt.getAppointment_status()))
+		        .count();
+		    
+		    // Add statistics to model
+		    m.addAttribute("totalAppointments", allAppointments.size());
+		    m.addAttribute("todayAppointments", todayAppointments);
+		    m.addAttribute("recentPatients", recentAppointments);
+		    m.addAttribute("uniquePatients", uniquePatients);
+		    m.addAttribute("pendingAppointments", pendingAppointments);
+		    m.addAttribute("confirmedAppointments", confirmedAppointments);
+		    m.addAttribute("allAppointments", allAppointments);
+		    
 		
 		return "Doctor/DoctorDashBoard";
 	}
@@ -279,4 +362,90 @@ public class DoctorController
 //		return list;
 //	}
 	
+	
+	  @GetMapping("/ViewAppointments/{doctorId}")
+	    public String viewDoctorAppointments(@PathVariable int doctorId, Model m, HttpSession hs) {
+	        Doctor doctor = ds.findById(doctorId);
+	        
+	        if(doctor == null) {
+	            return "redirect:/";
+	        }
+	        
+	        List<Appointments> appointments = as.findByDoctor(doctor);
+	        
+	        
+	        // Calculate statistics
+	        long totalAppointments = appointments.size();
+	        
+	        long confirmedCount = appointments.stream()
+	            .filter(appt -> "Confirmed".equals(appt.getAppointment_status()))
+	            .count();
+	        
+	        long pendingCount = appointments.stream()
+	            .filter(appt -> "Pending".equals(appt.getAppointment_status()))
+	            .count();
+	        
+	        long uniquePatientsCount = appointments.stream()
+	            .map(appt -> appt.getPatient().getId())
+	            .distinct()
+	            .count();
+	        
+	        // Add to model
+	        m.addAttribute("doctor", doctor);
+	        m.addAttribute("appointments", appointments);
+	        m.addAttribute("totalAppointments", totalAppointments);
+	        m.addAttribute("confirmedCount", confirmedCount);
+	        m.addAttribute("pendingCount", pendingCount);
+	        m.addAttribute("uniquePatientsCount", uniquePatientsCount);
+	        
+	        return "Doctor/DoctorAppointments";
+	    }
+	    
+	    // Update appointment status (Accept/Reject)
+	    @PostMapping("/UpdateAppointmentStatus/{doctorId}")
+	    public String updateAppointmentStatus(
+	            @PathVariable int doctorId,
+	            @RequestParam("appointmentId") int appointmentId,
+	            @RequestParam("status") String status,
+	            RedirectAttributes redirectAttributes) {
+	        
+	        Appointments appointment = as.findById(appointmentId);
+	        
+	        if(appointment != null && appointment.getDoctor().getDid() == doctorId) {
+	            appointment.setAppointment_status(status);
+	            as.saveAppointment(appointment);
+	            redirectAttributes.addFlashAttribute("msg", "Appointment status updated to: " + status);
+	        } else {
+	            redirectAttributes.addFlashAttribute("msg", "Cannot update appointment status!");
+	        }
+	        
+	        return "redirect:/doctor/ViewAppointments/" + doctorId;
+	    }
+	    
+	    // View single appointment details
+	    @GetMapping("/ViewAppointmentDetails/{doctorId}/{appointmentId}")
+	    public String viewAppointmentDetails(@PathVariable int doctorId, @PathVariable int appointmentId, Model m) {
+	        Doctor doctor = ds.findById(doctorId);
+	        Appointments appointment = as.findById(appointmentId);
+	        
+	        if(doctor != null && appointment != null) {
+	            m.addAttribute("doctor", doctor);
+	            m.addAttribute("appointment", appointment);
+	            m.addAttribute("patient", appointment.getPatient());
+	        }
+	        
+	        return "Doctor/AppointmentDetails";
+	    }
+	
+	    // to show reports
+	    @GetMapping("/doctor/DoctorReport/{id}")
+	    public String ShowReport(@PathVariable int id  , Model m)
+	    {
+	    	Doctor doctor = ds.findById(id);
+	    	
+	    	m.addAttribute("doctor", doctor);
+	    	
+	    	return "Doctor/DoctorReport";
+	    }
+	    
 }

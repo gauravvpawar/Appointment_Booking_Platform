@@ -2,6 +2,7 @@ package com.example.demo.Model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -10,13 +11,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 public class Patient 
 {
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	private String name;
 	private String email;
@@ -31,9 +31,9 @@ public class Patient
 	
 	@Embedded
 	private PatientInfo patientinfo = new PatientInfo();
-	
-	@OneToMany
-	private List<Appointments> appointments;
+	 
+	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+	    private List<Appointments> appointments;
 
 	public int getId() {
 		return id;
@@ -129,7 +129,5 @@ public class Patient
 				+ cnfPassword + ", phone=" + phone + ", gender=" + gender + ", age=" + age + ", status=" + status
 				+ ", patientinfo=" + patientinfo + ", appointments=" + appointments + "]";
 	}
-
-	
 	
 }

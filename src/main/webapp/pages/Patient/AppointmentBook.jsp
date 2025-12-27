@@ -95,7 +95,7 @@
 
         <!-- Select Doctor (dynamic later) -->
        <label>Select Doctor</label>
-	<select name="did" required>
+	<select name="doctorId" required>
 	    <option value="">-- Select Doctor --</option>
 	    <c:forEach var="doctor" items="${doctors}">
 	        <option value="${doctor.did}">
@@ -111,8 +111,16 @@
 
         <!-- Appointment Time -->
         <label>Appointment Time</label>
-        <input type="time" name="appointment_time" required>
-
+		  <select name="appointment_time" required>
+                <option value="09:00 AM">09:00 AM</option>
+                <option value="10:00 AM">10:00 AM</option>
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="12:00 PM">12:00 PM</option>
+                <option value="02:00 PM">02:00 PM</option>
+                <option value="03:00 PM">03:00 PM</option>
+                <option value="04:00 PM">04:00 PM</option>
+                <option value="05:00 PM">05:00 PM</option>
+            </select>
         <!-- Reason -->
         <label>Reason for Appointment</label>
         <textarea name="reason" placeholder="Describe your symptoms or reason for visit..."></textarea>

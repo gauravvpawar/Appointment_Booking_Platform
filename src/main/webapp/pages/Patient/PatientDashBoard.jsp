@@ -1,32 +1,20 @@
 <%@page import="com.example.demo.Model.Patient"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8" %><%@page import="java.sql.*"%>
-
-
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%
-
 HttpSession hs =  request.getSession();
 Patient patient = (Patient) hs.getAttribute("patient");
 
 if(patient == null)
 {
-	out.println("<script>");
-	out.println("alert('You can not access directly to patient dashboard, Login First!')");
-	out.println("window.location.href = './PatientLoginForm.jsp'");
-	out.println("</script>");
+    out.println("<script>");
+    out.println("alert('You can not access directly to patient dashboard, Login First!')");
+    out.println("window.location.href = './PatientLoginForm.jsp'");
+    out.println("</script>");
 }
 %>
-
-
-<c:if test="${not empty msg}">
-    <div id="toast" class="toast">
-        ${msg}
-    </div>
-</c:if>
-
-
 
 <!DOCTYPE html>
 <html>
@@ -207,6 +195,96 @@ if(patient == null)
         }
     }
 
+    /* STATS SECTION - MOVED TO TOP */
+    .stats-section {
+        grid-column: 1 / -1;
+        margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.75rem;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: all 0.3s ease;
+        border-top: 4px solid;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--hover-shadow);
+    }
+
+    .stat-card:nth-child(1) {
+        border-top-color: var(--warning);
+    }
+
+    .stat-card:nth-child(2) {
+        border-top-color: var(--success);
+    }
+
+    .stat-card:nth-child(3) {
+        border-top-color: var(--danger);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-card:nth-child(1) .stat-icon {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.2));
+        color: var(--warning);
+    }
+
+    .stat-card:nth-child(2) .stat-icon {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2));
+        color: var(--success);
+    }
+
+    .stat-card:nth-child(3) .stat-icon {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.2));
+        color: var(--danger);
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        font-weight: 500;
+    }
+
     /* PROFILE SECTION */
     .profile-section {
         position: sticky;
@@ -239,26 +317,61 @@ if(patient == null)
         padding: 2rem;
         box-shadow: var(--card-shadow);
         transition: all 0.3s ease;
+        height: fit-content;
     }
 
     .profile-card:hover {
         box-shadow: var(--hover-shadow);
     }
 
+    .profile-avatar-container {
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .profile-avatar-link {
+        display: inline-block;
+        text-decoration: none;
+    }
+
     .profile-avatar {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 140px;
+        margin: 0 auto;
+    }
+
+    .profile-avatar-img {
+        width: 120px;
+        height: 120px;
         border-radius: 50%;
+        border: 4px solid white;
+        object-fit: cover;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+    }
+
+    .avatar-fallback {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 2rem;
+        font-size: 2.5rem;
         font-weight: 700;
-        margin-bottom: 1.5rem;
         border: 4px solid white;
         box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+    }
+
+    .file-name {
+        margin-top: 8px;
+        font-size: 0.9rem;
+        color: var(--text-light);
+        word-break: break-word;
+        text-align: center;
     }
 
     .profile-details {
@@ -343,7 +456,7 @@ if(patient == null)
 
     /* APPOINTMENTS SECTION */
     .appointments-section {
-        margin-top: 1rem;
+        margin-top: 0;
     }
 
     .section-header {
@@ -419,8 +532,21 @@ if(patient == null)
         border-radius: 50px;
         font-size: 0.8rem;
         font-weight: 600;
-        background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.2));
-        color: var(--primary);
+    }
+
+    .badge-pending {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.2));
+        color: var(--warning);
+    }
+
+    .badge-confirmed {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.2));
+        color: var(--success);
+    }
+
+    .badge-cancelled {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.2));
+        color: var(--danger);
     }
 
     .appointment-details-grid {
@@ -474,6 +600,46 @@ if(patient == null)
         margin-top: 1rem;
     }
 
+    .appointment-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+
+    .action-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .action-view {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.2));
+        color: var(--primary);
+    }
+
+    .action-view:hover {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(37, 99, 235, 0.3));
+        transform: translateY(-2px);
+    }
+
+    .action-cancel {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.2));
+        color: var(--danger);
+    }
+
+    .action-cancel:hover {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.3));
+        transform: translateY(-2px);
+    }
+
     .no-appointments {
         text-align: center;
         padding: 4rem 2rem;
@@ -500,56 +666,39 @@ if(patient == null)
         color: var(--text-light);
         margin-bottom: 2rem;
     }
-    
-    
-    /* Profile avatar link */
-.profile-avatar-link {
-    display: inline-block;
-    text-align: center; /* Center filename under image */
-    text-decoration: none; /* Remove underline */
-}
 
-/* Profile avatar container */
-.profile-avatar {
-    display: flex;
-    flex-direction: column; /* Stack image and filename */
-    align-items: center;
-    width: 140px; /* Set fixed width */
-}
+    /* TOAST */
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: white;
+        padding: 14px 24px;
+        border-radius: 10px;
+        font-weight: 600;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        animation: slideIn 0.5s ease, fadeOut 0.5s ease 3s forwards;
+    }
 
-/* Avatar image */
-.profile-avatar-img {
-    width: 120px;   /* Fixed width */
-    height: 120px;  /* Fixed height */
-    border-radius: 50%; /* Circular */
-    border: 4px solid white;
-    object-fit: cover;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
-}
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
 
-/* Fallback avatar */
-.avatar-fallback {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #2563eb, #0ea5e9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2.5rem;
-    font-weight: 700;
-}
-
-/* Filename below avatar */
-.file-name {
-    margin-top: 8px;
-    font-size: 0.9rem;
-    color: #64748b; /* text-light */
-    word-break: break-word; /* long filenames wrap */
-}
-    
-    
+    @keyframes fadeOut {
+        to {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+    }
 
     /* RESPONSIVE DESIGN */
     @media (max-width: 768px) {
@@ -586,6 +735,10 @@ if(patient == null)
             flex-direction: column;
             gap: 1rem;
         }
+        
+        .appointment-actions {
+            flex-wrap: wrap;
+        }
     }
 
     /* ANIMATIONS */
@@ -615,69 +768,6 @@ if(patient == null)
     .delay-3 {
         animation-delay: 0.3s;
     }
-    
-    .toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #10b981;
-    color: white;
-    padding: 15px 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    font-weight: 600;
-    z-index: 9999;
-    opacity: 1;
-    transition: opacity 0.5s ease;
-}
-
-/* Add this under .profile-avatar */
-.profile-avatar {
-    flex-direction: column; /* Stack avatar image and filename */
-}
-
-/* Filename under avatar */
-.profile-avatar .file-name {
-    margin-top: 8px;
-    font-size: 0.9rem;
-    color: var(--text-light);
-    text-align: center;
-}
-
-.toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: linear-gradient(135deg, #10b981, #34d399);
-    color: white;
-    padding: 14px 24px;
-    border-radius: 10px;
-    font-weight: 600;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    z-index: 9999;
-    animation: slideIn 0.5s ease, fadeOut 0.5s ease 3s forwards;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes fadeOut {
-    to {
-        opacity: 0;
-        transform: translateX(50px);
-    }
-}
-
-
-    
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -687,9 +777,9 @@ if(patient == null)
 <body>
 
 
-<c:if test="${not empty sessionScope.msg}">
+<c:if test="${not empty msg}">
     <div id="toast" class="toast">
-        ${sessionScope.msg}
+        ${msg}
     </div>
     <script>
         setTimeout(function(){
@@ -698,11 +788,7 @@ if(patient == null)
             setTimeout(function(){ toast.remove(); }, 500);
         }, 3000);
     </script>
-    <c:remove var="msg" scope="session"/>
 </c:if>
-
-
-
 
 
 <!-- NAVBAR -->
@@ -712,7 +798,7 @@ if(patient == null)
             <i class="fas fa-heartbeat"></i>
         </div>
         <div class="brand-text">
-            <h1>MediCare , Patient Portal</h1>
+            <h1>MediCare, Patient Portal</h1>
             <p>Your Health, Our Priority</p>
         </div>
     </div>
@@ -731,39 +817,100 @@ if(patient == null)
 
 <!-- MAIN CONTENT -->
 <div class="container">
+    <!-- STATS SECTION - MOVED TO TOP -->
+    <div class="stats-section fade-in">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">
+                        <c:set var="pendingCount" value="0" />
+                        <c:forEach var="appt" items="${patientAppointments}">
+                            <c:if test="${appt.appointment_status == 'Pending'}">
+                                <c:set var="pendingCount" value="${pendingCount + 1}" />
+                            </c:if>
+                        </c:forEach>
+                        ${pendingCount}
+                    </div>
+                    <div class="stat-label">Pending Appointments</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">
+                        <c:set var="confirmedCount" value="0" />
+                        <c:forEach var="appt" items="${patientAppointments}">
+                            <c:if test="${appt.appointment_status == 'Confirmed'}">
+                                <c:set var="confirmedCount" value="${confirmedCount + 1}" />
+                            </c:if>
+                        </c:forEach>
+                        ${confirmedCount}
+                    </div>
+                    <div class="stat-label">Confirmed Appointments</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">
+                        <c:set var="cancelledCount" value="0" />
+                        <c:forEach var="appt" items="${patientAppointments}">
+                            <c:if test="${appt.appointment_status == 'Cancelled'}">
+                                <c:set var="cancelledCount" value="${cancelledCount + 1}" />
+                            </c:if>
+                        </c:forEach>
+                        ${cancelledCount}
+                    </div>
+                    <div class="stat-label">Cancelled Appointments</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="dashboard-grid">
         <!-- LEFT COLUMN - PROFILE -->
         <div class="profile-section">
-            <div class="profile-header fade-in">
-                <p class="welcome-text">Welcome back,</p>
-                <h2 class="patient-name"> ${patient.name}</h2>
-            </div>
-            
-
-<div class="profile-avatar-container">
-    <a href="/patient/PatientEditForm/${patient.id}" class="profile-avatar-link">
-        <div class="profile-avatar">
-            <c:choose>
-                <c:when test="${not empty patient.patientinfo.fileName}">
-                    <img src="/images/${patient.patientinfo.fileName}" 
-                         alt="Profile Picture" 
-                         class="profile-avatar-img"
-                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;avatar-fallback&quot;>${patient.name.substring(0,1)}</div>'">
-                </c:when>
-                <c:otherwise>
-                    <div class="avatar-fallback">
-                        ${patient.name.substring(0,1)}
-                    </div>
-                </c:otherwise>
-            </c:choose>
-        </div>
-    </a>
-</div>
-
-          
-          
+            <div class="profile-card fade-in delay-1">
+                <div class="profile-avatar-container">
+                    <a href="/patient/PatientEditForm/${patient.id}" class="profile-avatar-link">
+                        <div class="profile-avatar">
+                            <c:choose>
+                                <c:when test="${not empty patient.patientinfo.fileName}">
+                                    <img src="/images/${patient.patientinfo.fileName}" 
+                                         alt="Profile Picture" 
+                                         class="profile-avatar-img"
+                                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;avatar-fallback&quot;>${patient.name.substring(0,1)}</div>'">
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="avatar-fallback">
+                                        ${patient.name.substring(0,1)}
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </a>
+                </div>
                 
                 <div class="profile-details">
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="detail-content">
+                            <div class="detail-label">Full Name</div>
+                            <div class="detail-value">${patient.name}</div>
+                        </div>
+                    </div>
+                    
                     <div class="detail-item">
                         <div class="detail-icon">
                             <i class="fas fa-envelope"></i>
@@ -805,8 +952,6 @@ if(patient == null)
                     </div>
                 </div>
                 
-                
-                
                 <div class="status-badge">
                     <i class="fas fa-check-circle"></i>
                     ${patient.status}
@@ -818,18 +963,145 @@ if(patient == null)
                 </a>
             </div>
         </div>
-        
-        
-        
-        
- <script>
+
+        <!-- RIGHT COLUMN - APPOINTMENTS -->
+        <div class="appointments-section">
+            <div class="section-header fade-in">
+                <h2 class="section-title">
+                    <i class="fas fa-calendar-check"></i>
+                    My Appointments
+                </h2>
+            </div>
+
+            <!-- Appointments List -->
+            <div class="appointments-list">
+                <c:choose>
+                    <c:when test="${not empty patientAppointments}">
+                        <c:forEach var="appt" items="${patientAppointments}">
+                            <div class="appointment-card fade-in delay-2">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-user-md"></i>
+                                        Appointment with Dr. ${appt.doctor.name}
+                                    </h3>
+                                    <span class="appointment-badge 
+                                        <c:choose>
+                                            <c:when test="${appt.appointment_status == 'Pending'}">badge-pending</c:when>
+                                            <c:when test="${appt.appointment_status == 'Confirmed'}">badge-confirmed</c:when>
+                                            <c:when test="${appt.appointment_status == 'Cancelled'}">badge-cancelled</c:when>
+                                        </c:choose>">
+                                        ${appt.appointment_status}
+                                    </span>
+                                </div>
+                                
+                                <div class="appointment-details-grid">
+                                    <div class="detail-box">
+                                        <div class="detail-icon-box">
+                                            <i class="fas fa-calendar"></i>
+                                        </div>
+                                        <div class="detail-content-box">
+                                            <h4>Appointment Date</h4>
+                                            <p>${appt.appointment_date}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-box">
+                                        <div class="detail-icon-box">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="detail-content-box">
+                                            <h4>Appointment Time</h4>
+                                            <p>${appt.appointment_time}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-box">
+                                        <div class="detail-icon-box">
+                                            <i class="fas fa-user-md"></i>
+                                        </div>
+                                        <div class="detail-content-box">
+                                            <h4>Doctor</h4>
+                                            <p>Dr. ${appt.doctor.name}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-box">
+                                        <div class="detail-icon-box">
+                                            <i class="fas fa-stethoscope"></i>
+                                        </div>
+                                        <div class="detail-content-box">
+                                            <h4>Appointment ID</h4>
+                                            <p>#${appt.appt_id}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-box">
+                                        <div class="detail-icon-box">
+                                            <i class="fas fa-comment-medical"></i>
+                                        </div>
+                                        <div class="detail-content-box">
+                                            <h4>Reason</h4>
+                                            <p>${appt.reason}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-box">
+                                        <div class="detail-icon-box">
+                                            <i class="fas fa-tag"></i>
+                                        </div>
+                                        <div class="detail-content-box">
+                                            <h4>Department</h4>
+                                            <p>${appt.doctor.specialization}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="specialization-tag">
+                                    <i class="fas fa-tag"></i>
+                                    ${appt.doctor.specialization}
+                                </div>
+                                
+                                <div class="appointment-actions">
+                                    <a href="/patient/ViewAppointment/${patient.id}/${appt.appt_id}" 
+                                       class="action-btn action-view">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </a>
+                                    
+                                    <c:if test="${appt.appointment_status == 'Pending'}">
+                                        <a href="/patient/CancelAppointment/${patient.id}/${appt.appt_id}" 
+                                           onclick="return confirm('Are you sure you want to cancel this appointment?')"
+                                           class="action-btn action-cancel">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </a>
+                                    </c:if>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </c:when>
+                    
+                    <c:otherwise>
+                        <div class="no-appointments fade-in delay-2">
+                            <i class="fas fa-calendar-times"></i>
+                            <h3>No Upcoming Appointments</h3>
+                            <p>You don't have any scheduled appointments at the moment.</p>
+                            <a href="/patient/BookAppointment/${patient.id}" class="btn btn-primary">
+                                <i class="fas fa-calendar-plus"></i>
+                                Schedule Your First Appointment
+                            </a>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
     setTimeout(() => {
         const toast = document.getElementById("toast");
         if (toast) toast.remove();
     }, 3500);
 </script>
-        
 
-</div>
 </body>
 </html>
